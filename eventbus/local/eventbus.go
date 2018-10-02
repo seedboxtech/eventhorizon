@@ -1,4 +1,4 @@
-// Copyright (c) 2014 - The Event Horizon authors.
+// Copyright (c) 2018 - The Event Horizon authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -84,7 +84,6 @@ func (b *EventBus) Errors() <-chan Error {
 
 // Handles all events coming in on the channel.
 func (b *EventBus) handle(m eh.EventMatcher, h eh.EventHandler, ch <-chan evt) {
-	b.wg.Add(1)
 	defer b.wg.Done()
 
 	for e := range ch {
@@ -120,6 +119,8 @@ func (b *EventBus) channel(m eh.EventMatcher, h eh.EventHandler, observer bool) 
 	if observer { // Generate unique ID for each observer.
 		id = fmt.Sprintf("%s-%s", id, eh.NewUUID())
 	}
+
+	b.wg.Add(1)
 	return b.group.channel(id)
 }
 
