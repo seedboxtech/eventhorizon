@@ -19,10 +19,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/looplab/eventhorizon/eventhandler/projector"
-	"github.com/stretchr/testify/assert"
-
 	eh "github.com/looplab/eventhorizon"
+	"github.com/looplab/eventhorizon/eventhandler/projector"
 	"github.com/looplab/eventhorizon/mocks"
 
 	"github.com/looplab/eventhorizon/eventbus"
@@ -56,7 +54,7 @@ func TestCloseAndWait(t *testing.T) {
 	bus := NewEventBus(nil)
 
 	id, _ := eh.ParseUUID("c1138e5f-f6fb-4dd0-8e79-255c6c8d3756")
-	event := eh.NewEventForAggregate(mocks.EventType, &mocks.EventData{Content: "event1"}, time.Now(), mocks.AggregateType, id, 1)
+	event := eh.NewEventForAggregate(mocks.EventType, &mocks.EventData{Content: "event"}, time.Now(), mocks.AggregateType, id, 1)
 
 	repo := &mocks.Repo{}
 	slowProjector := NewSlowProjector(repo, time.Second)
@@ -65,14 +63,16 @@ func TestCloseAndWait(t *testing.T) {
 
 	bus.PublishEvent(context.Background(), event)
 
-	// Event can't be done processing yet
-	assert.False(t, repo.SaveCalled)
+	if repo.SaveCalled == true {
+		t.Error("event can't be done processing yet")
+	}
 
 	bus.Close()
 	bus.Wait()
 
-	// Event must be processed after the wait
-	assert.True(t, repo.SaveCalled)
+	if repo.SaveCalled == false {
+		t.Error("event must be processed after the wait")
+	}
 }
 
 // SlowProjector is a projector that takes time to handle events
@@ -81,17 +81,17 @@ type SlowProjector struct {
 	delay time.Duration
 }
 
-// NewSlowProjector creates a new SlowProjector.
+// NewSlowProjector creates a new SlowProjector
 func NewSlowProjector(repo eh.ReadWriteRepo, delay time.Duration) *SlowProjector {
 	return &SlowProjector{repo: repo, delay: delay}
 }
 
-// ProjectorType method of the eventhorizon.Projector interface.
+// ProjectorType method of the eventhorizon.Projector interface
 func (p *SlowProjector) ProjectorType() projector.Type {
 	return projector.Type("SlowProjector")
 }
 
-// Project method of the eventhorizon.Projector interface.
+// Project method of the eventhorizon.Projector interface
 func (p *SlowProjector) Project(ctx context.Context, event eh.Event, entity eh.Entity) (eh.Entity, error) {
 	time.Sleep(p.delay)
 

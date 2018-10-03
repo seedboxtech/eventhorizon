@@ -12,8 +12,6 @@ require (
 	github.com/gorilla/websocket v1.4.0
 	github.com/jpillora/backoff v0.0.0-20170918002102-8eab2debe79d
 	github.com/kr/pretty v0.1.0
-	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/stretchr/testify v1.2.2
 	go.opencensus.io v0.15.0 // indirect
 	golang.org/x/net v0.0.0-20180826012351-8a410e7b638d // indirect
 	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be // indirect
