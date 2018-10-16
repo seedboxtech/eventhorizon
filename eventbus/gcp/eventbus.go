@@ -42,7 +42,7 @@ type EventBus struct {
 	errCh        chan eh.EventBusError
 }
 
-// NewEventBus creates a EventBus.
+// NewEventBus creates an EventBus.
 func NewEventBus(projectID, appID string, opts ...option.ClientOption) (*EventBus, error) {
 	ctx := context.Background()
 	client, err := pubsub.NewClient(ctx, projectID, opts...)
